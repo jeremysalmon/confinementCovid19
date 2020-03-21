@@ -1,4 +1,4 @@
-## Sequelize-Auto
+## Sequelize-Auto (21/03/2020)
 ### Générer les modèles à partir de BDD existante
 
 [Pour Sequelize-Auto c'est par ici](https://github.com/sequelize/sequelize-auto)
