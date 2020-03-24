@@ -11,3 +11,13 @@ sequelize-auto -o "./models" -d MABASE -h localhost -u MONUSER -p 5432 -x MONPAS
 ```
 
 et voilà vos modèles créés !
+
+### Ajout de champs "virtuels"
+
+Quand on veut traiter les resultats retournés par Sequelize pour ajouter des données par exemple avant de faire un ```res.json(result)``` il faut dans le modèle créer des champs de type VIRTUAL : 
+
+``` 
+  monNouveauChamps: {
+    type: DataTypes.VIRTUAL
+  } 
+```
