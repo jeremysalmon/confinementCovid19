@@ -92,6 +92,7 @@ routes: [
           redirect: { name: '404', params: { ressource: 'page' } }
         }
       ]
+```
 
 ### Timeout dans Axios
 
