@@ -132,3 +132,106 @@ const router = new Router({
   ]
 })
 ```
+
+### Un formulaire pour se logguer
+
+Dans src/views/LoginUser.vue
+
+```
+<template>
+<div>
+  <form @submit.prevent="login">
+    <label for="email">
+      Email:
+    </label>
+    <input v-model="email" type="email" name="email" value>
+
+    <label for="password">
+      Password:
+    </label>
+    <input v-model="password" type="password" name="password" value>
+
+    <button type="submit" name="button">
+      Login
+    </button>
+  </form>
+</div>
+</template>
+
+<script>
+  export default () {
+    data () {
+      return {
+        email: '',
+        password: ''
+      }
+    },
+    methods: {
+      login () {
+        this.$store
+          .dispatch('login', {
+            email: this.email,
+            password: this.password
+          })
+          .then(() => { this.$router.push({ name: 'dashboard' }) })
+      }
+    }
+  }
+</script>
+```
+
+### On ajoute une action dans VueX pour gérer le login : 
+
+```
+
+action {
+  ...
+  login ({ commit }, credentials) {
+    return axios
+      .post('//localhost:3000/login', credentials)
+      .then(({ data }) => {
+        commit('SET_USER_DATA', data)
+      })
+  }
+}
+```
+
+### On ajoute un getters dans VueX pour retourner si l'utilistateur est connecté ou non
+
+```
+getters: {
+  loggedIn (state) {
+    return !!state.user
+  }
+}
+```
+
+Le !! permet de retourner l'inverse de la valeur ... et ainsi de savoir s'il est connecté ou non
+
+On va rendre cette valeur accessible à tous les components en créeant ```src/vuex/helpers.js```
+
+```
+import { mapGetters } from 'vuex'
+    
+export const authComputed = {
+  ...mapGetters(['loggedIn'])
+}
+```
+
+Et il suffit d'ajouter dans les components : 
+
+```import { authComputed } from '../vuex/helpers.js'```
+
+Et une valeur computed : 
+
+```
+computed: {
+  ...authComputed
+}
+```
+
+La valeur peut maintenant être utilisée dans des ```v-if```
+
+```
+<div v-if="!loggedIn">
+```
