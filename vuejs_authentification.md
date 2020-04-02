@@ -235,3 +235,71 @@ La valeur peut maintenant être utilisée dans des ```v-if```
 ```
 <div v-if="!loggedIn">
 ```
+
+### Se deconnecter avec VueX
+
+On va d'abord créer une ```action``` pour se déconnecter : 
+
+```
+logout ({ commit }) {
+  commit('LOGOUT')
+}
+```
+
+Et on ajoute la mutation correspondante : 
+
+```
+LOGOUT () {
+  localStorage.removeItem('user')
+  location.reload()
+}
+```
+
+Le reload nous permet d'être sur de réinialiser à leurs valeurs par défaut l'ensemble des données du ```state```
+
+### Bloquer les routes qui ont besoin d'authentification
+
+Dans les propriétés des routes qui ont besoin d'une authentification on va ajouter 
+```
+meta: { requiresAuth: true }
+```
+
+Ensuite dans le router avant d'entrer dans 
+
+```
+router.beforeEach((to, from, next) => {
+  const loggedIn = localStorage.getItem('user')
+  if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
+    next('/')
+  }
+  next()
+})
+```
+
+### Reconnecter l'utilisateur même s'il rafraîchit sa page 
+
+Dans le ```main.js``` au moment de l'instanciation de Vue : 
+
+```
+new Vue({
+  router,
+  store,
+  created () {
+    const userString = localStorage.getItem('user') // On recupère dans le localstorage l'utilisateur
+    if (userString) { // s'il existe
+      const userData = JSON.parse(userString) // on converti la chaine en objet
+      this.$store.commit('SET_USER_DATA', userData) // et on le stocke dans le VueX
+    }
+    axios.interceptors.response.use( // On ajoute un interceptors à Axio pour qu'il nous déconnecte en cas d'erreur 401
+      response => response,
+      error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch('logout')
+        }
+        return Promise.reject(error)
+      }
+    )
+  },
+  render: h => h(App)
+}).$mount('#app')
+```
