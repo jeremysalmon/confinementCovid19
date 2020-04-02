@@ -9,3 +9,8 @@ On ajoute la propriété customdata.externalId avec la valeur gagOU si elle n'ex
 Sinon rien ne change
 
 
+### Copie une base vers une nouvelle base
+
+```CREATE DATABASE nouvellebase TEMPLATE basedereference;```
+
+
